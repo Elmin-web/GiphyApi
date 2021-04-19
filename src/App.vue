@@ -1,19 +1,52 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Search @search:gif="searchGif" />
+    <Prewiew :isLoading="isLoading" :gifs="gifs" />
   </div>
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Search from "./components/Search.vue";
+import Prewiew from "./components/Prewiew.vue";
 
 export default {
-  name: 'App',
+  name: "App",
+  data() {
+    return {
+      gifs: [],
+      isLoading: false,
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    Search,
+    Prewiew,
+  },
+  methods: {
+    searchGif(query) {
+      this.isLoading = true;
+      this.gifs = [];
+      fetch(
+        `https://api.giphy.com/v1/gifs/search?api_key=5GMRCISEfzvkP4GETWsYy87Ww4jFNITM&q=${query}`
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          this.gifs = res.data;
+          this.isLoading = false;
+        });
+    },
+
+  },
+  created() {
+    this.isLoading = true;
+    fetch(
+      "https://api.giphy.com/v1/gifs/trending?apiKey=5GMRCISEfzvkP4GETWsYy87Ww4jFNITM&api_key=dc6zaTOxFJmzC"
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        this.gifs = res.data;
+        this.isLoading = false;
+      });
+  },
+};
 </script>
 
 <style>
@@ -21,7 +54,6 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 60px;
 }
